@@ -8,3 +8,7 @@ desktop.ini
 # Rust
 /target
 **/*.rs.bk
+
+# Nix
+/result
+.direnv/
