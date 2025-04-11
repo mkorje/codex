@@ -1042,18 +1042,14 @@ Xi Ξ
 Zeta Ζ
 
 // Hebrew.
-// In math, the following symbols are replaced with corresponding characters
-// from Letterlike Symbols.
-// See https://github.com/typst/typst/pull/3375.
-aleph א
-alef א
-beth ב
-bet ב
-gimmel ג
-gimel ג
-daleth ד
-dalet ד
-shin ש
+aleph ℵ
+alef ℵ
+beth ℶ
+bet ℶ
+gimmel ℷ
+gimel ℷ
+daleth ℸ
+dalet ℸ
 
 // Double-struck.
 AA 𝔸
