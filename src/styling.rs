@@ -178,6 +178,11 @@ pub enum MathVariant {
     Fraktur,
     SansSerif,
     Monospace,
+    Isolated,
+    Initial,
+    Tailed,
+    Stretched,
+    Looped,
     DoubleStruck,
     Chancery,
     Roundhand,
@@ -230,6 +235,54 @@ impl MathStyle {
     ) -> MathStyle {
         use conversions::*;
         use MathVariant::*;
+
+        if is_arabic(c) || is_arabic_dotless(c) {
+            let Some(variant) = variant else {
+                let style = if matches!(italic, Some(false)) {
+                    MathStyle::Plain
+                } else if matches!(c, 'ج' | 'ه') {
+                    MathStyle::Initial
+                } else {
+                    MathStyle::Isolated
+                };
+                return style;
+            };
+
+            return match variant {
+                Isolated if (is_arabic(c) & !matches!(c, 'ه')) | is_arabic_dotless(c) => {
+                    MathStyle::Isolated
+                }
+                Initial
+                    if is_arabic(c) & !matches!(c, 'ا' | 'د'..='ز' | 'ط' | 'ظ' | 'و') =>
+                {
+                    MathStyle::Initial
+                }
+                Tailed
+                    if (is_arabic(c)
+                        & !matches!(
+                            c,
+                            'ا' | 'ب' | 'ت' | 'ث' | 'د'
+                                ..='ز' | 'ط' | 'ظ' | 'ف' | 'ك' | 'م' | 'ه' | 'و'
+                        ))
+                        | (is_arabic_dotless(c) & !matches!(c, 'ٮ' | 'ڡ')) =>
+                {
+                    MathStyle::Tailed
+                }
+                Stretched
+                    if (is_arabic(c) & !matches!(c, 'ا' | 'د'..='ز' | 'ل' | 'و'))
+                        | (is_arabic_dotless(c) & !matches!(c, 'ٯ' | 'ں')) =>
+                {
+                    MathStyle::Stretched
+                }
+                Looped if is_arabic(c) & !matches!(c, 'ك') => MathStyle::Looped,
+                DoubleStruck if is_arabic(c) & !matches!(c, 'ا' | 'ك' | 'ه') => {
+                    MathStyle::DoubleStruck
+                }
+                _ if matches!(c, 'ج' | 'ه') => MathStyle::Initial,
+                _ => MathStyle::Isolated,
+            };
+        }
+
         match (variant.unwrap_or(Plain), bold, italic) {
             (SansSerif, false, Some(false)) if is_latin(c) => MathStyle::SansSerif,
             (SansSerif, false, _) if is_latin(c) => MathStyle::SansSerifItalic,
@@ -444,6 +497,16 @@ mod conversions {
     #[inline]
     pub fn is_hebrew(c: char) -> bool {
         matches!(c, 'א'..='ד')
+    }
+
+    #[inline]
+    pub fn is_arabic(c: char) -> bool {
+        matches!(c, 'ا' | 'ب' | 'ت'..='غ' | 'ف'..='و' | 'ي')
+    }
+
+    #[inline]
+    pub fn is_arabic_dotless(c: char) -> bool {
+        matches!(c, 'ٮ' | 'ٯ' | 'ڡ' | 'ں')
     }
 
     /// The character given by adding `delta` to the codepoint of `c`.
