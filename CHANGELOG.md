@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## Version 0.3.0 (June 4, 2026)
 
 ### General changes
 
